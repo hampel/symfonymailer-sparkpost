@@ -1,0 +1,34 @@
+{
+    "name": "hampel/symfonymailer-sparkpost",
+    "type": "library",
+    "description": "A Symfony Mailer Transport for SparkPost",
+    "license": "MIT",
+	"authors": [{
+		"name": "Simon Hampel",
+		"email": "simon@hampelgroup.com",
+		"role": "Developer"
+	}],
+	"support": {
+		"issues": "https://github.com/hampel/symfonymailer-sparkpost/issues",
+		"source": "https://github.com/hampel/symfonymailer-sparkpost"
+	},
+	"homepage": "https://github.com/hampel/symfonymailer-sparkpost",
+    "require": {
+        "php": ">=7.2.5",
+        "symfony/mailer": "^4.4|^5.0|^6.0"
+    },
+	"require-dev": {
+		"phpunit/phpunit": "^10.0",
+        "guzzlehttp/guzzle": "^7.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Hampel\\Symfony\\Mailer\\SparkPost\\": "src/"
+		}
+	},
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    }
+}
