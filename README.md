@@ -9,7 +9,8 @@ By [Simon Hampel](mailto:simon@hampelgroup.com)
 
 ## Description
 
-Standalone implementation of Symfony Mailer SparkPost Driver based on https://github.com/gam6itko/sparkpost-mailer
+Standalone implementation of Symfony Mailer SparkPost Driver based on https://github.com/gam6itko/sparkpost-mailer - but
+using GuzzleHttp as the HTTP client rather than Symfony HTTP Client.
 
 ## Installation
 
