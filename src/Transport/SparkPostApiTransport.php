@@ -92,7 +92,18 @@ class SparkPostApiTransport extends AbstractApiTransport
             return $email->getContent();
         }
 
-        $from = $envelope->getSender();
+        //  use the from headers in the email object if they are set
+        $fromAddresses = $email->getFrom();
+        if (!empty($fromAddresses))
+        {
+            $from = $fromAddresses[0];
+        }
+        else
+        {
+            // if no from headers in email object, fall back to the envelope sender, which will generate a from address
+            // for us if necessary
+            $from = $envelope->getSender();
+        }
 
         return array_filter([
             'from'        => array_filter([
