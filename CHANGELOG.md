@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.1.2 (2024-10-04)
+------------------
+
+* fix bug in AbstractHttpTransport::doSend where it tries to call appendDebug on the wrong object
+
 1.1.1 (2024-09-09)
 ------------------
 
