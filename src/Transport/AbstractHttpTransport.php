@@ -54,7 +54,7 @@ abstract class AbstractHttpTransport extends AbstractTransport
             $response = $this->doSendHttp($message);
             $message->appendDebug($response->getReasonPhrase() ?? '');
         } catch (ClientException $e) {
-            $e->appendDebug($e->getResponse()->getReasonPhrase() ?? '');
+            $message->appendDebug($e->getResponse()->getReasonPhrase() ?? '');
 
             throw $e;
         }
