@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.1.3 (2025-08-30)
+------------------
+
+* fix bug in ReplyTo headers where we were using the wrong parameter key
+
 1.1.2 (2024-10-04)
 ------------------
 
