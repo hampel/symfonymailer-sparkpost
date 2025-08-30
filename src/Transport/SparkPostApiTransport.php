@@ -105,13 +105,6 @@ class SparkPostApiTransport extends AbstractApiTransport
             $from = $envelope->getSender();
         }
 
-        $replyToAddresses = $email->getReplyTo();
-        $replyTo = [];
-        foreach ($replyToAddresses as $replyToAddress)
-        {
-            $replyTo[] = $replyToAddress->getAddress();
-        }
-
         return array_filter([
             'from'        => array_filter([
                 'name'  => $from->getName(),
@@ -120,7 +113,9 @@ class SparkPostApiTransport extends AbstractApiTransport
             'subject'     => $email->getSubject(),
             'text'        => $email->getTextBody(),
             'html'        => $email->getHtmlBody(),
-            'reply_to'     => implode(',', $replyTo),
+            'reply_to'     => implode(',', array_map(function ($replyTo) {
+                return $replyTo->getAddress();
+            }, $email->getReplyTo())),
             'attachments' => $this->buildAttachments($email),
         ]);
     }
