@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+1.1.4 (2026-08-20)
+------------------
+
+* fix bugs in SparkPostApiTransport::handleError - it called getContent(), which does not exist on a
+  PSR-7 response, and built an HttpTransportException, which is typed against Symfony's HttpClient
+  ResponseInterface and cannot accept a Guzzle response; API errors now throw TransportException, which
+  is what implements TransportExceptionInterface
+* send the transmission with 'http_errors' => false so that non-2xx responses are handled by
+  handleError rather than escaping as a Guzzle ClientException - note that callers who were catching
+  GuzzleHttp exceptions from this transport should now catch TransportExceptionInterface
+* handleError no longer assumes the response body is JSON, or that a JSON body has an 'errors' key
+* treat any 2xx response as success rather than only 200
+
 1.1.3 (2025-08-30)
 ------------------
 
