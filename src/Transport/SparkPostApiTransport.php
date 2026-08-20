@@ -5,7 +5,7 @@ use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Envelope;
-use Symfony\Component\Mailer\Exception\HttpTransportException;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Header\ParameterizedHeader;
@@ -62,7 +62,10 @@ class SparkPostApiTransport extends AbstractApiTransport
                     'Authorization' => $this->key,
                     'Content-Type'  => 'application/json',
                 ],
-                'json'    => $payload,
+                'json'         => $payload,
+                // handle non-2xx responses ourselves in handleError, so that failures surface as a
+                // TransportExceptionInterface rather than a raw Guzzle ClientException
+                'http_errors'  => false,
             ]
         );
 
@@ -152,17 +155,29 @@ class SparkPostApiTransport extends AbstractApiTransport
     }
 
     /**
-     * @throws HttpTransportException
+     * @throws TransportException
      */
     private function handleError(ResponseInterface $response): void
     {
-        if (200 === $response->getStatusCode()) {
+        $statusCode = $response->getStatusCode();
+        if ($statusCode >= 200 && $statusCode < 300) {
             return;
         }
 
-        $data = json_decode($response->getContent(false), true);
-        $this->getLogger()->error('SparkPostApiTransport error response', $data);
+        $body = (string) $response->getBody();
+        $data = json_decode($body, true);
 
-        throw new HttpTransportException(json_encode($data['errors']), $response, $response->getStatusCode());
+        $context = is_array($data) ? $data : ['body' => $body];
+        $this->getLogger()->error('SparkPostApiTransport error response', $context);
+
+        $errors = isset($data['errors']) ? json_encode($data['errors']) : $body;
+
+        $exception = new TransportException(
+            sprintf('Unable to send an email via SparkPost (HTTP %d): %s', $statusCode, $errors),
+            $statusCode
+        );
+        $exception->appendDebug($response->getReasonPhrase());
+
+        throw $exception;
     }
 }
